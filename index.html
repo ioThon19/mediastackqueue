@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="id" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stack &amp; Queue - Media Pembelajaran Interaktif</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+    <script src="/_sdk/element_sdk.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pushIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes popOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.7);
+            }
+        }
+
+        @keyframes enqueueIn {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes dequeueOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(-40px);
+            }
+        }
+
+        .anim-push {
+            animation: pushIn 0.4s ease;
+        }
+
+        .anim-pop {
+            animation: popOut 0.3s ease forwards;
+        }
+
+        .anim-enqueue {
+            animation: enqueueIn 0.4s ease;
+        }
+
+        .anim-dequeue {
+            animation: dequeueOut 0.3s ease forwards;
+        }
+
+        .stack-item,
+        .queue-item {
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-dot.active {
+            background: #3b82f6;
+            width: 28px;
+            border-radius: 5px;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #334155;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 24px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+    </style>
+    <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+</head>
+
+<body class="h-full bg-slate-50 overflow-auto">
+    <div id="app" class="w-full h-full flex flex-col"><!-- Header -->
+        <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3">
+                <h1 id="main-title" class="text-lg font-bold text-slate-800">Stack &amp; Queue</h1>
+            </div>
+            <div class="flex items-center gap-2" id="nav-dots"></div>
+            <div class="flex gap-2"><button onclick="prevSlide()" class="btn-secondary text-sm px-3 py-2"><i
+                        data-lucide="chevron-left" class="w-4 h-4"></i></button> <button onclick="nextSlide()"
+                    class="btn-primary text-sm px-3 py-2"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+            </div>
+        </header><!-- Content -->
+        <main class="flex-1 overflow-auto p-6"><!-- Slide 0: Orientasi Masalah -->
+            <div class="slide active max-w-4xl mx-auto" data-slide="0">
+                <div class="badge bg-amber-100 text-amber-700 mb-4">
+                    <i data-lucide="alert-circle" class="w-3 h-3"></i> Tahap 1: Orientasi Masalah
+                </div>
+                <h2 class="text-3xl font-extrabold text-slate-900 mb-4">Pernahkah Kamu Mengalami Ini?</h2>
+                <div class="grid md:grid-cols-2 gap-5 mt-6">
+                    <div class="card">
+                        <div class="text-4xl mb-3">
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-2">Tumpukan Piring</h3>
+                        <p id="problem-text-1" class="text-slate-600 text-sm leading-relaxed">Saat mencuci piring, kamu
+                            selalu mengambil piring paling atas dari tumpukan. Piring yang terakhir ditaruh adalah yang
+                            pertama diambil. Ini adalah prinsip <strong>LIFO (Last In, First Out)</strong>.</p>
+                    </div>
+                    <div class="card">
+                        <div class="text-4xl mb-3">
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-2">Antrian di ATM</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">Saat mengantri di ATM, orang yang datang
+                            pertama dilayani lebih dulu. Orang terakhir harus menunggu giliran. Ini adalah prinsip
+                            <strong>FIFO (First In, First Out)</strong>.
+                        </p>
+                    </div>
+                </div>
+                <div class="card mt-6 bg-blue-50 border-blue-200">
+                    <p class="text-blue-800 font-semibold text-center">Pertanyaan: Bagaimana komputer mengatur data
+                        yang masuk dan keluar seperti contoh di atas?</p>
+                </div>
+            </div><!-- Slide 1: Identifikasi Masalah -->
+            <div class="slide max-w-4xl mx-auto" data-slide="1">
+                <div class="badge bg-purple-100 text-purple-700 mb-4">
+                    <i data-lucide="search" class="w-3 h-3"></i> Tahap 2: Identifikasi Masalah
+                </div>
+                <h2 class="text-3xl font-extrabold text-slate-900 mb-4">Apa yang Perlu Kita Pahami?</h2>
+                <div class="space-y-4 mt-6">
+                    <div class="card flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
+                            <span class="text-blue-600 font-bold">1</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Apa itu Stack?</h4>
+                            <p class="text-slate-600 text-sm">Struktur data yang mengikuti prinsip LIFO (Last in First
+                                Out) — elemen
+                                terakhir masuk, pertama keluar.</p>
+                        </div>
+                    </div>
+                    <div class="card flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
+                            <span class="text-blue-600 font-bold">2</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Apa itu Queue?</h4>
+                            <p class="text-slate-600 text-sm">Struktur data yang mengikuti prinsip FIFO (First in First
+                                Out) — elemen pertama
+                                masuk, pertama keluar.</p>
+                        </div>
+                    </div>
+                    <div class="card flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
+                            <span class="text-blue-600 font-bold">3</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Operasi Utama</h4>
+                            <p class="text-slate-600 text-sm">Stack: <strong>Push</strong> (masuk) &amp;
+                                <strong>Pop</strong> (keluar). Queue: <strong>Enqueue</strong> (masuk) &amp;
+                                <strong>Dequeue</strong> (keluar).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- Slide 2: Eksplorasi Konsep Stack -->
+            <div class="slide max-w-4xl mx-auto" data-slide="2">
+                <div class="badge bg-green-100 text-green-700 mb-4">
+                    <i data-lucide="book-open" class="w-3 h-3"></i> Tahap 3: Eksplorasi Konsep — Stack
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Stack (Tumpukan)</h2>
+                <p class="text-slate-600 mb-5">Prinsip <strong>LIFO</strong>: Last In, First Out — Yang terakhir masuk,
+                    pertama keluar.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="card text-center">
+                        <h4 class="font-bold text-slate-800 mb-3">Visualisasi Stack</h4>
+                        <div class="relative mx-auto w-48">
+                            <div class="border-2 border-slate-300 border-t-0 rounded-b-xl p-3 min-h-[220px] flex flex-col-reverse gap-2 items-center"
+                                id="stack-visual-demo">
+                                <div class="w-full py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold">
+                                    A
+                                </div>
+                                <div class="w-full py-2 bg-blue-400 text-white rounded-lg text-sm font-semibold">
+                                    B
+                                </div>
+                                <div class="w-full py-2 bg-blue-300 text-white rounded-lg text-sm font-semibold">
+                                    C ← TOP
+                                </div>
+                            </div>
+                            <div class="mt-2 text-xs text-slate-500">
+                                ↑ Elemen masuk &amp; keluar dari atas
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h4 class="font-bold text-slate-800 mb-3">Operasi Stack</h4>
+                        <div class="space-y-3">
+                            <div class="bg-green-50 border border-green-200 rounded-xl p-3">
+                                <p class="font-bold text-green-700 text-sm">Push (Tambah)</p>
+                                <p class="text-slate-600 text-xs">Menambah elemen baru ke puncak stack.</p>
+                            </div>
+                            <div class="bg-red-50 border border-red-200 rounded-xl p-3">
+                                <p class="font-bold text-red-700 text-sm">Pop (Hapus)</p>
+                                <p class="text-slate-600 text-xs">Menghapus elemen dari puncak stack.</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                            <p class="text-xs text-amber-800"><strong>Contoh nyata:</strong> Undo di aplikasi, tombol
+                                Back di browser, tumpukan buku.</p>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- Slide 3: Eksplorasi Konsep Queue -->
+            <div class="slide max-w-4xl mx-auto" data-slide="3">
+                <div class="badge bg-green-100 text-green-700 mb-4">
+                    <i data-lucide="book-open" class="w-3 h-3"></i> Tahap 3: Eksplorasi Konsep — Queue
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Queue (Antrian)</h2>
+                <p class="text-slate-600 mb-5">Prinsip <strong>FIFO</strong>: First In, First Out — Yang pertama masuk,
+                    pertama keluar.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="card text-center">
+                        <h4 class="font-bold text-slate-800 mb-3">Visualisasi Queue</h4>
+                        <div class="mx-auto w-full">
+                            <div class="flex items-center justify-center gap-1 text-xs text-slate-500 mb-2"><span>KELUAR
+                                    ←</span> <span class="flex-1"></span> <span>← MASUK</span>
+                            </div>
+                            <div
+                                class="border-2 border-slate-300 rounded-xl p-3 flex gap-2 items-center justify-center min-h-[60px]">
+                                <div class="px-4 py-2 bg-indigo-300 text-white rounded-lg text-sm font-semibold">
+                                    A ← FRONT
+                                </div>
+                                <div class="px-4 py-2 bg-indigo-400 text-white rounded-lg text-sm font-semibold">
+                                    B
+                                </div>
+                                <div class="px-4 py-2 bg-indigo-500 text-white rounded-lg text-sm font-semibold">
+                                    C ← REAR
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h4 class="font-bold text-slate-800 mb-3">Operasi Queue</h4>
+                        <div class="space-y-3">
+                            <div class="bg-green-50 border border-green-200 rounded-xl p-3">
+                                <p class="font-bold text-green-700 text-sm">Enqueue (Tambah)</p>
+                                <p class="text-slate-600 text-xs">Menambah elemen baru ke belakang antrian.</p>
+                            </div>
+                            <div class="bg-red-50 border border-red-200 rounded-xl p-3">
+                                <p class="font-bold text-red-700 text-sm">Dequeue (Hapus)</p>
+                                <p class="text-slate-600 text-xs">Menghapus elemen dari depan antrian.</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                            <p class="text-xs text-amber-800"><strong>Contoh nyata:</strong> Antrian kasir, print
+                                queue, playlist musik.</p>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- Slide 4: Simulasi Stack -->
+            <div class="slide max-w-4xl mx-auto" data-slide="4">
+                <div class="badge bg-cyan-100 text-cyan-700 mb-4">
+                    <i data-lucide="play-circle" class="w-3 h-3"></i> Tahap 4: Simulasi Interaktif — Stack
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-4">Simulasi Stack (LIFO)</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="card">
+                        <h4 class="font-bold text-slate-800 mb-3">Kontrol</h4>
+                        <div class="flex gap-2 mb-4"><input type="text" id="stack-input" placeholder="Masukkan data..."
+                                class="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                                maxlength="15"> <button onclick="stackPush()" class="btn-primary text-sm">Push</button>
+                        </div><button onclick="stackPop()" class="btn-secondary text-sm w-full mb-4">Pop (Hapus
+                            Teratas)</button>
+                        <div id="stack-log"
+                            class="text-xs text-slate-600 space-y-1 max-h-32 overflow-auto bg-slate-50 rounded-lg p-3">
+                            <p class="text-slate-400 italic">Log aktivitas akan muncul di sini adik adik ...</p>
+                        </div>
+                    </div>
+                    <div class="card text-center">
+                        <h4 class="font-bold text-slate-800 mb-3">Stack <span id="stack-count"
+                                class="text-slate-500 font-normal text-sm">(0 elemen)</span></h4>
+                        <div class="relative mx-auto w-52">
+                            <div class="text-xs text-slate-400 mb-1">
+                                ↓ TOP (Push &amp; Pop di sini)
+                            </div>
+                            <div id="stack-container"
+                                class="border-2 border-dashed border-slate-300 rounded-b-xl p-3 min-h-[240px] flex flex-col-reverse gap-2 items-center transition-all">
+                                <p class="text-slate-400 text-sm italic" id="stack-empty-msg">Stack kosong</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- Slide 5: Simulasi Queue -->
+            <div class="slide max-w-4xl mx-auto" data-slide="5">
+                <div class="badge bg-cyan-100 text-cyan-700 mb-4">
+                    <i data-lucide="play-circle" class="w-3 h-3"></i> Tahap 4: Simulasi Interaktif — Queue
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-4">Simulasi Queue (FIFO)</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="card">
+                        <h4 class="font-bold text-slate-800 mb-3">Kontrol</h4>
+                        <div class="flex gap-2 mb-4"><input type="text" id="queue-input" placeholder="Masukkan data..."
+                                class="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                                maxlength="15"> <button onclick="queueEnqueue()"
+                                class="btn-primary text-sm">Enqueue</button>
+                        </div><button onclick="queueDequeue()" class="btn-secondary text-sm w-full mb-4">Dequeue (Hapus
+                            Terdepan)</button>
+                        <div id="queue-log"
+                            class="text-xs text-slate-600 space-y-1 max-h-32 overflow-auto bg-slate-50 rounded-lg p-3">
+                            <p class="text-slate-400 italic">Log aktivitas akan muncul di sini adik adik...</p>
+                        </div>
+                    </div>
+                    <div class="card text-center">
+                        <h4 class="font-bold text-slate-800 mb-3">Queue <span id="queue-count"
+                                class="text-slate-500 font-normal text-sm">(0 elemen)</span></h4>
+                        <div class="flex items-center justify-center gap-1 text-xs text-slate-400 mb-1"><span>FRONT
+                                (Dequeue) →</span><span class="flex-1"></span><span>← REAR (Enqueue)</span>
+                        </div>
+                        <div id="queue-container"
+                            class="border-2 border-dashed border-slate-300 rounded-xl p-3 min-h-[80px] flex gap-2 items-center flex-wrap transition-all">
+                            <p class="text-slate-400 text-sm italic" id="queue-empty-msg">Queue kosong</p>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- Slide 6: Analisis & Perbandingan -->
+            <div class="slide max-w-4xl mx-auto" data-slide="6">
+                <div class="badge bg-orange-100 text-orange-700 mb-4">
+                    <i data-lucide="bar-chart-2" class="w-3 h-3"></i> Tahap 5: Analisis Hasil
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-4">Perbandingan Stack vs Queue</h2>
+                <div class="card overflow-hidden p-0">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="p-3 text-left text-slate-700">Aspek</th>
+                                <th class="p-3 text-left text-blue-600">Stack</th>
+                                <th class="p-3 text-left text-indigo-600">Queue</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-3 font-medium text-slate-700">Prinsip</td>
+                                <td class="p-3">LIFO</td>
+                                <td class="p-3">FIFO</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-medium text-slate-700">Tambah</td>
+                                <td class="p-3">Push (atas)</td>
+                                <td class="p-3">Enqueue (belakang)</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-medium text-slate-700">Hapus</td>
+                                <td class="p-3">Pop (atas)</td>
+                                <td class="p-3">Dequeue (depan)</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-medium text-slate-700">Analogi</td>
+                                <td class="p-3">Tumpukan piring</td>
+                                <td class="p-3">Antrian kasir</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div><!-- Slide 7: Refleksi -->
+            <div class="slide max-w-4xl mx-auto" data-slide="7">
+                <div class="badge bg-rose-100 text-rose-700 mb-4">
+                    <i data-lucide="check-circle" class="w-3 h-3"></i> Tahap 6: Refleksi &amp; Kesimpulan
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-4">Apa yang Sudah Kamu Pelajari?</h2>
+                <div class="space-y-4">
+                    <div class="card bg-blue-50 border-blue-200">
+                        <h4 class="font-bold text-blue-800 mb-2">Stack</h4>
+                        <p class="text-blue-700 text-sm">Struktur data LIFO. Elemen terakhir yang masuk akan keluar
+                            pertama. Operasi: Push &amp; Pop. Cocok untuk fitur Undo, navigasi halaman, dan pengelolaan
+                            memori.</p>
+                    </div>
+                    <div class="card bg-indigo-50 border-indigo-200">
+                        <h4 class="font-bold text-indigo-800 mb-2">Queue</h4>
+                        <p class="text-indigo-700 text-sm">Struktur data FIFO. Elemen pertama yang masuk akan keluar
+                            pertama. Operasi: Enqueue &amp; Dequeue. Cocok untuk antrian proses, penjadwalan tugas, dan
+                            buffering data.</p>
+                    </div>
+                    <div class="card">
+                        <h4 class="font-bold text-slate-800 mb-2">Poin Penting</h4>
+                        <ul class="text-slate-600 text-sm space-y-1 list-disc list-inside">
+                            <li>Stack dan Queue adalah struktur data fundamental dalam pemrograman.</li>
+                            <li>Memahami LIFO dan FIFO membantu menyelesaikan banyak masalah komputasi.</li>
+                            <li>Keduanya digunakan di hampir semua aplikasi yang kita gunakan sehari-hari.</li>
+                        </ul>
+                    </div>
+                    <div class="card bg-indigo-50 border-indigo-200">
+                        <h4 class="font-bold text-indigo-800 mb-2">Pesan:</h4>
+                        <p class="text-indigo-700 text-sm">Selalu semangat dalam belajar ya nak :D</p>
+                        <p class="text-indigo-700 text-sm">- Anthonio Akbar</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        // Slide navigation
+        let currentSlide = 0;
+        const totalSlides = 8;
+
+        function renderDots() {
+            const c = document.getElementById('nav-dots');
+            c.innerHTML = '';
+            for (let i = 0; i < totalSlides; i++) {
+                const d = document.createElement('div');
+                d.className = 'nav-dot' + (i === currentSlide ? ' active' : '');
+                d.onclick = () => goToSlide(i);
+                c.appendChild(d);
+            }
+        }
+
+        function goToSlide(n) {
+            document.querySelectorAll('.slide').forEach((s, i) => s.classList.toggle('active', i === n));
+            currentSlide = n;
+            renderDots();
+        }
+
+        function nextSlide() { if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1); }
+        function prevSlide() { if (currentSlide > 0) goToSlide(currentSlide - 1); }
+
+        renderDots();
+
+        // Stack simulation
+        let stackData = [];
+        const stackColors = ['#3b82f6', '#2563eb', '#1d4ed8', '#1e40af', '#1e3a8a', '#60a5fa', '#93c5fd'];
+
+        function stackPush() {
+            const input = document.getElementById('stack-input');
+            const val = input.value.trim();
+            if (!val) return;
+            if (stackData.length >= 20) { addLog('stack-log', '⚠️ Stack penuh! (max 20)'); return; }
+            stackData.push(val);
+            input.value = '';
+            renderStack('push');
+            addLog('stack-log', `✅ Push: "${val}" ditambahkan ke TOP`);
+        }
+
+        function stackPop() {
+            if (stackData.length === 0) { addLog('stack-log', '⚠️ Stack kosong!'); return; }
+            const val = stackData.pop();
+            renderStack('pop');
+            addLog('stack-log', `🔴 Pop: "${val}" dihapus dari TOP`);
+        }
+
+        function renderStack(action) {
+            const c = document.getElementById('stack-container');
+            const emptyMsg = document.getElementById('stack-empty-msg');
+            if (stackData.length === 0) {
+                c.innerHTML = '<p class="text-slate-400 text-sm italic" id="stack-empty-msg">Stack kosong</p>';
+            } else {
+                c.innerHTML = '';
+                stackData.forEach((item, i) => {
+                    const el = document.createElement('div');
+                    const isTop = i === stackData.length - 1;
+                    el.className = 'w-full py-2 text-white rounded-lg text-sm font-semibold stack-item' + (isTop && action === 'push' ? ' anim-push' : '');
+                    el.style.background = stackColors[i % stackColors.length];
+                    el.textContent = item + (isTop ? ' ← TOP' : '');
+                    c.appendChild(el);
+                });
+            }
+            document.getElementById('stack-count').textContent = `(${stackData.length} elemen)`;
+        }
+
+        // Queue simulation
+        let queueData = [];
+        const queueColors = ['#6366f1', '#4f46e5', '#4338ca', '#3730a3', '#312e81', '#818cf8', '#a5b4fc'];
+
+        function queueEnqueue() {
+            const input = document.getElementById('queue-input');
+            const val = input.value.trim();
+            if (!val) return;
+            if (queueData.length >= 20) { addLog('queue-log', '⚠️ Queue penuh! (max 20)'); return; }
+            queueData.push(val);
+            input.value = '';
+            renderQueue('enqueue');
+            addLog('queue-log', `✅ Enqueue: "${val}" masuk ke REAR`);
+        }
+
+        function queueDequeue() {
+            if (queueData.length === 0) { addLog('queue-log', '⚠️ Queue kosong!'); return; }
+            const val = queueData.shift();
+            renderQueue('dequeue');
+            addLog('queue-log', `🔴 Dequeue: "${val}" keluar dari FRONT`);
+        }
+
+        function renderQueue(action) {
+            const c = document.getElementById('queue-container');
+            if (queueData.length === 0) {
+                c.innerHTML = '<p class="text-slate-400 text-sm italic" id="queue-empty-msg">Queue kosong</p>';
+            } else {
+                c.innerHTML = '';
+                queueData.forEach((item, i) => {
+                    const el = document.createElement('div');
+                    const isLast = i === queueData.length - 1;
+                    const isFirst = i === 0;
+                    el.className = 'px-4 py-2 text-white rounded-lg text-sm font-semibold queue-item' + (isLast && action === 'enqueue' ? ' anim-enqueue' : '');
+                    el.style.background = queueColors[i % queueColors.length];
+                    let label = item;
+                    if (isFirst) label += ' ← FRONT';
+                    if (isLast && !isFirst) label += ' ← REAR';
+                    if (isFirst && isLast) label = item + ' ← FRONT/REAR';
+                    el.textContent = label;
+                    c.appendChild(el);
+                });
+            }
+            document.getElementById('queue-count').textContent = `(${queueData.length} elemen)`;
+        }
+
+        function addLog(id, msg) {
+            const log = document.getElementById(id);
+            if (log.querySelector('.italic')) log.innerHTML = '';
+            const p = document.createElement('p');
+            p.textContent = msg;
+            log.prepend(p);
+            if (log.children.length > 10) log.lastChild.remove();
+        }
+
+        // Enter key support
+        document.getElementById('stack-input').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); stackPush(); } });
+        document.getElementById('queue-input').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); queueEnqueue(); } });
+
+        // Element SDK
+        const defaultConfig = {
+            main_title: 'Stack & Queue',
+            problem_text: 'Pernahkah kamu mengantri di kasir atau menumpuk piring?',
+            background_color: '#f8fafc',
+            surface_color: '#ffffff',
+            text_color: '#1e293b',
+            primary_action: '#3b82f6',
+            secondary_action: '#6366f1'
+        };
+
+        window.elementSdk.init({
+            defaultConfig,
+            onConfigChange: async (config) => {
+                const bg = config.background_color || defaultConfig.background_color;
+                const surface = config.surface_color || defaultConfig.surface_color;
+                const text = config.text_color || defaultConfig.text_color;
+                const primary = config.primary_action || defaultConfig.primary_action;
+                const secondary = config.secondary_action || defaultConfig.secondary_action;
+                const font = config.font_family || 'Plus Jakarta Sans';
+                const size = config.font_size || 16;
+
+                document.body.style.background = bg;
+                document.querySelectorAll('.card').forEach(c => { c.style.background = surface; });
+                document.querySelectorAll('h2, h3, h4').forEach(el => { el.style.color = text; });
+                document.querySelectorAll('.btn-primary').forEach(b => { b.style.background = primary; });
+                document.querySelectorAll('.nav-dot.active').forEach(d => { d.style.background = primary; });
+                document.body.style.fontFamily = `${font}, sans-serif`;
+                document.body.style.fontSize = size + 'px';
+
+                document.getElementById('main-title').textContent = config.main_title || defaultConfig.main_title;
+            },
+            mapToCapabilities: (config) => ({
+                recolorables: [
+                    { get: () => config.background_color || defaultConfig.background_color, set: v => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+                    { get: () => config.surface_color || defaultConfig.surface_color, set: v => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+                    { get: () => config.text_color || defaultConfig.text_color, set: v => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+                    { get: () => config.primary_action || defaultConfig.primary_action, set: v => { config.primary_action = v; window.elementSdk.setConfig({ primary_action: v }); } },
+                    { get: () => config.secondary_action || defaultConfig.secondary_action, set: v => { config.secondary_action = v; window.elementSdk.setConfig({ secondary_action: v }); } }
+                ],
+                borderables: [],
+                fontEditable: { get: () => config.font_family || defaultConfig.font_family, set: v => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
+                fontSizeable: { get: () => config.font_size || defaultConfig.font_size, set: v => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); } }
+            }),
+            mapToEditPanelValues: (config) => new Map([
+                ['main_title', config.main_title || defaultConfig.main_title],
+                ['problem_text', config.problem_text || defaultConfig.problem_text]
+            ])
+        });
+
+        lucide.createIcons();
+    </script>
+    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'9fa0bc0996698342',t:'MTc3ODQ5Nzc5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
+</body>
+
+</html>
